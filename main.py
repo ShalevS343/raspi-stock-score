@@ -1,12 +1,19 @@
 from model import Model
 
 def main():
-    default_stocks = ['NIO', 'AAPL', 'AMZN', 'GOOGL', 'TSLA', 'META', 'NVDA', 'WMT', 'XOM', 'UNH', 'CVS', 'MCK', 'CVX', 'COST']
+    default_stocks = [
+        "SIRI", "F", "PBR", "UAA", "UBER", "NIO", "SPCE",
+        "NOK", "INO", "GRPN", "NCLH", "KODK",
+        "HTZ", "CZR", "CCL", "NKLA", "TSLA", "RKT", "GME", "FUBO", "PLUG", "RIOT",
+        "SNAP", "ROKU", "CLOV", "BB", "SPWR", "CLNE"
+    ]
+
     
     diffs = []
     for stock in default_stocks:
         model = Model(stock)
-        diffs.append([stock, model.start()[0]])
+        diff = model.start()
+        diffs.append([stock, diff[0] if not isinstance(diff, int) else diff])
     
     print(diffs)
         

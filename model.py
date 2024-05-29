@@ -6,7 +6,6 @@ from sklearn.preprocessing import MinMaxScaler
 from keras.layers import LSTM, Dense
 from sklearn.model_selection import TimeSeriesSplit
 from keras.models import Sequential, load_model
-from keras.utils import plot_model
 import yfinance as yf
 
 class Model:
@@ -56,7 +55,6 @@ class Model:
         self.lstm.add(LSTM(32, input_shape=(1, X_train.shape[2]), activation='relu', return_sequences=False))
         self.lstm.add(Dense(1))
         self.lstm.compile(loss='mean_squared_error', optimizer='adam')
-        plot_model(self.lstm, show_shapes=True, show_layer_names=True)
         history = self.lstm.fit(X_train, y_train, epochs=50, batch_size=8, verbose=1, shuffle=False)
         return history
 
@@ -86,7 +84,7 @@ class Model:
         avg_diff = total_diff / 30
         
         if sum(earliest_actual) - sum(latest_actual) > 0:
-            avg_diff += .45
+            avg_diff += .35
         
         # Penalize larger differences
         score = 100 - min(avg_diff * 100, 100)
@@ -95,7 +93,6 @@ class Model:
         
         return score
 
-    # Other methods remain the same...
 
     def start(self):
         self.fetch_data()
@@ -106,12 +103,12 @@ class Model:
         if os.path.exists(self.model_path):
             # If the model is already downloaded, load it
             self.lstm = load_model(self.model_path)
-            print("Model loaded from the 'res' folder.")
+            print(f"{self.__stock}'s model loaded from the 'res' folder.")
         else:
             # If the model is not downloaded, start the LSTM process
             self.build_and_train_lstm(X_train, y_train)
             self.lstm.save(self.model_path)
-            print("Model saved to the 'res' folder.")
+            print(f"{self.__stock}'s model saved to the 'res' folder.")
 
         # Score the model
         return self.score_stock(y_train, X_test, y_test)
