@@ -14,7 +14,7 @@ class Model:
         self.df = None
         self.scaler = MinMaxScaler()
         self.lstm = None
-        self.model_path = f"models/{stock}"  # Path to store the model
+        self.model_path = f"models/{stock}.keras"  # Path to store the model
 
 
     def fetch_data(self):

@@ -1,0 +1,6 @@
+[submodule "lcd"]
+	path = lcd
+	url = https://github.com/the-raspberry-pi-guy/lcd
+[submodule "pybluez"]
+	path = pybluez
+	url = https://github.com/pybluez/pybluez
