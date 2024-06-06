@@ -8,6 +8,33 @@ Simple server application that uses RFCOMM sockets.
 # Import necessary modules
 from lcd_model import process_message, scroll_stocks  # Custom functions for processing and displaying messages on the LCD
 import bluetooth  # PyBluez library for Bluetooth communication
+import RPi.GPIO as GPIO
+from time import sleep
+from threading import Thread
+
+def buttons():
+	GPIO.setmode(GPIO.BCM)
+	prev, start, next = 17, 27, 22
+
+	GPIO.setup(prev, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+	GPIO.setup(start, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+	GPIO.setup(next, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+	sleep(1)
+	try:
+		while True:
+			if not GPIO.input(prev):
+				process_message("prev")
+			elif not GPIO.input(start):
+				process_message("start")
+			elif not GPIO.input(next):
+				process_message("next")
+			sleep(.1)
+	except KeyboardInterrupt:
+		pass  # Handle keyboard interrupt (Ctrl+C) gracefully
+
+
+buttons_thread = Thread(target=buttons)
+buttons_thread.start()
 
 # Create a Bluetooth socket using RFCOMM protocol
 server_sock = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
@@ -34,7 +61,7 @@ bluetooth.advertise_service(server_sock, "SampleServer", service_id=uuid,
 print("Waiting for connection on RFCOMM channel", port)
 
 # Initialize the LCD display with a start message
-scroll_stocks('init_start')
+process_message('init_start')
 
 try:
     # Main loop to handle incoming connections
@@ -65,3 +92,5 @@ except KeyboardInterrupt:
 finally:
     server_sock.close()  # Ensure the server socket is closed on exit
     print("All done.")
+
+buttons_thread.join()
